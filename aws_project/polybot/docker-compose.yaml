@@ -1,0 +1,18 @@
+version: "3"
+services:
+  poly:
+    image: polybot
+    
+    container_name: poly
+    
+    ports:
+      - 8443:8443
+      
+    volumes:
+      - ./polybot/b-z-new-280415815.key:/app/b-z-new-280415815.key
+      - ./polybot/b-z-new-280415815.pem:/app/b-z-new-280415815.pem
+      - ../.aws/credentials:/root/.aws/credentials
+      - ./polybot/bot.py:/app/bot.py
+      - ./polybot/app.py:/app/app.py
+      
+    restart: always

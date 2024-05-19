@@ -1,0 +1,16 @@
+version: "3"
+services:
+  yolo5:
+    image: yolo5
+    container_name: yolo5
+    ports:
+        - 8081:8081
+        
+    environment:
+        - BUCKET_NAME=basharziv
+        - SQS_QUEUE_NAME=bashar_z_sqs
+        
+    volumes:
+        - ../.aws/credentials:/root/.aws/credentials
+        - ./yolo5/app.py:/usr/src/app/app.py
+    restart: always
