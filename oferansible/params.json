@@ -1,0 +1,13 @@
+{
+    "path": "/home/ubuntu/.aws",
+    "username": "ubuntu",
+    "group": "ubuntu",
+    "aws_region": "ap-southeast-2",
+    "ecr_repository":"933060838752.dkr.ecr.eu-west-1.amazonaws.com/ofer-flask-image",
+    "docker_image_tag":"1.0",
+
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
+    "aws_format": "json"
+
+}

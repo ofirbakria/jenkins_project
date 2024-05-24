@@ -1,0 +1,120 @@
+---
+- hosts: all
+  gather_facts: true
+  become: yes
+  tasks:
+
+
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+
+    - name: Create directory .aws
+      file:
+        path: "{{ path }}"
+        state: directory
+        owner: "{{ username | default('ubuntu') }}"
+        group: "{{ group }}"
+        mode: '0755'
+
+    - name: Create file config
+      copy:
+        dest: "{{ path }}/config"
+        content: |
+          [default]
+          region = ap-southeast-2
+          output = text
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Create file credentials
+      copy:
+        dest: "{{ path }}/credentials"
+        content: |
+          [default]
+          aws_access_key_id = "{{ aws_access_key_id }}"
+          aws_secret_access_key = "{{ aws_secret_access_key }}"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+
+
+
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+
+
+
+
+
+
+    - name: Ensure python3 and venv are installed
+      apt:
+        name:
+          - python3
+          - python3-venv
+        state: present
+
+    - name: Create a virtual environment
+      command: python3 -m venv /opt/aws-cli-env
+      args:
+        creates: /opt/aws-cli-env/bin/activate
+
+    - name: Install AWS CLI using pip in virtual environment
+      command: /opt/aws-cli-env/bin/pip install awscli
+      args:
+        creates: /opt/aws-cli-env/bin/aws
+
+    - name: Create a symbolic link to AWS CLI
+      file:
+        src: /opt/aws-cli-env/bin/aws
+        dest: /usr/local/bin/aws
+        state: link
+
+
+
+
+    - name: Log in to ECR
+      shell: "aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin {{ ecr_repository }}"
+      register: login_result
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+      ignore_errors: yes
+
+    - name: Pull Docker image from ECR
+      docker_image:
+        name: "{{ ecr_repository }}:{{ docker_image_tag }}"
+        source: pull
+      when: login_result is succeeded
+
+# Running this playbook example command ansible-playbook -i hosts.ini -e "path=/home/ubuntu/ansible_test username=ubuntu group=ubuntu path_text=/home/ubuntu/ansible_test/test.txt"  create_dir_with_params.yaml      
+
+# Running this playbook with json  ansible-playbook -i hosts.ini -e "group=ubuntu"  -e "@params.json" create_dir_with_params.yaml
