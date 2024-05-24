@@ -21,12 +21,21 @@ class Bot:
         # remove any existing webhooks configured in Telegram servers
         self.telegram_bot_client.remove_webhook()
         time.sleep(0.5)
-        with open('b-z-new-280415815.pem', 'r') as file:
-          pem_contents = file.read()
-          print(pem_contents)
+       # with open('b-z-new-280415815.pem', 'r') as file:
+       #   pem_contents = file.read()
+        session = boto3.session.Session()
+        client = session.client(
+            service_name='secretsmanager',
+            region_name="eu-west-1"
+        )
+        pem_contents = client.get_secret_value(
+            SecretId="bashar_certificate"
+        )
+
+        print(pem_contents)
         # set the webhook URL
         #self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
-        self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', certificate=open('b-z-new-280415815.pem', 'r'))
+        self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', certificate=pem_contents)
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
         
     
