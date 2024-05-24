@@ -28,10 +28,11 @@ class Bot:
             service_name='secretsmanager',
             region_name="eu-west-1"
         )
-        pem_contents = client.get_secret_value(
+        secret_response  = client.get_secret_value(
             SecretId="bashar_certificate"
         )
 
+        pem_contents = secret_response['SecretString']
         print(pem_contents)
         # set the webhook URL
         #self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
