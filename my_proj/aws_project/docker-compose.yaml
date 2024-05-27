@@ -1,0 +1,92 @@
+version: "3.9"
+services:
+  mongo1:
+    image: mongo:5
+    container_name: mongo1
+    volumes:
+      - ./mnt:/mnt
+      # - ./mongo:/data/db
+    entrypoint: ["/mnt/mongodb-entrypoint.sh"]
+    # command: mongod --replSet myReplicaSet --bind_ip localhost,mongo1
+    ports:
+      - "27017:27017"
+    depends_on:
+      - mongo2
+      - mongo3
+    networks:
+      - mongoCluster
+    restart: always
+
+
+  mongo2:
+    image: mongo:5
+    container_name: mongo2
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
+    ports:
+      - "27018:27017"
+    restart: always
+    networks:
+      - mongoCluster
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
+    ports:
+      - "27019:27017"
+    restart: always
+    networks:
+      - mongoCluster
+
+
+  yolo5:
+    image: yolo5
+    container_name: yolo5
+    ports:
+        - "8081:8081"
+    environment:
+        - BUCKET_NAME=oferbakria
+    volumes:
+        - C:\Users\User\.aws\credentials:/root/.aws/credentials
+        - ./yolo5/app.py:/usr/src/app/app.py
+    networks:
+      - mongoCluster
+    restart: always
+
+
+  poly:
+    image: polybot
+    container_name: poly
+    ports:
+        - "8443:8443"
+    environment:
+        - TELEGRAM_TOKEN=${TELE_TOKEN}
+        - TELEGRAM_APP_URL=${PUBLIC_IP}
+    volumes:
+        - C:\Users\User\.aws\credentials:/root/.aws/credentials
+        - ./polybot/bot.py:/app/bot.py
+        - ./polybot/app.py:/app/app.py
+    networks:
+      - mongoCluster
+    restart: always
+
+
+
+  pixabay:
+    image: pixabay
+    container_name: pixabay
+    ports:
+        - "8082:8082"
+    environment:
+      - PIXABAY_TOKEN=${PIXABAY_TOKEN}
+    volumes:
+        - ./pixabay/app.py:/app/app.py
+    networks:
+      - mongoCluster
+    restart: always
+
+
+networks:
+  mongoCluster:
+    driver: bridge
+

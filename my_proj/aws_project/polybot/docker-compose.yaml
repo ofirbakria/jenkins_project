@@ -1,0 +1,18 @@
+version: "3"
+services:
+  poly:
+    image: polybot
+    
+    container_name: poly
+    
+    ports:
+      - 8443:8443
+      
+    volumes:
+      - ./YOURPRIVATE.key:/app/YOURPRIVATE.key
+      - ./YOURPUBLIC.pem:/app/YOURPUBLIC.pem
+      - ./.aws/credentials:/root/.aws/credentials
+      - ./polybot/bot.py:/app/bot.py
+      - ./polybot/app.py:/app/app.py
+      
+    restart: always

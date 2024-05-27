@@ -1,0 +1,15 @@
+version: "3"
+services:
+  metricstreamer:
+    image: metricstreamer
+    
+    container_name: metricstreamer
+    
+    ports:
+      - 8443:8443
+      
+    volumes:
+      - ../.aws/credentials:/root/.aws/credentials
+      - ./app.py:/app/app.py
+      
+    restart: always

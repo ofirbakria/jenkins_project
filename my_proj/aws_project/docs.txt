@@ -1,0 +1,32 @@
+docker exec -it mongo1 mongosh --eval "rs.initiate({
+  _id: 'myReplicaSet',
+  members: [
+    {_id: 0, host: 'mongo1'},
+    {_id: 1, host: 'mongo2'},
+    {_id: 2, host: 'mongo3'}
+  ]
+ })"
+
+ docker exec -it mongo1 mongosh --eval "rs.status()"
+
+git config --global core.autocrlf input
+git rm --cached -r .
+git reset --hard
+
+
+docker run -d --rm --name yolo_testing -p 8081:8081 -e BUCKET_NAME=oferbakria  -v C:\Users\User\.aws\credentials:/root/.aws/credentials yolo5
+
+
+C:\Users\User\Desktop\DevOps\ngrok.exe config add-authtoken <auth-token>  
+C:\Users\User\Desktop\DevOps\ngrok.exe http 8443
+
+
+tasklist | findstr /i "ngrok"
+taskkill /F /PID <PID>
+
+docker exec -it <container_name_or_id> mongo
+use <your_database_name>
+db.prediction.find()
+or
+db.prediction.find().pretty()
+
