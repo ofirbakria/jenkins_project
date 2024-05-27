@@ -11,6 +11,7 @@
         upgrade: yes
 
 
+
     - name: Create directory .aws
       file:
         path: "{{ path }}"
@@ -24,10 +25,10 @@
         dest: "{{ path }}/config"
         content: |
           [default]
-          region = ap-southeast-2
-          output = text
-        owner: ubuntu
-        group: ubuntu
+          region = "{{ aws_region }}"
+          output = "{{ aws_format }}"
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: '0644'
 
     - name: Create file credentials
@@ -37,9 +38,11 @@
           [default]
           aws_access_key_id = "{{ aws_access_key_id }}"
           aws_secret_access_key = "{{ aws_secret_access_key }}"
-        owner: ubuntu
-        group: ubuntu
+        owner: "{{ username }}"
+        group: "{{ group }}"
         mode: '0644'
+
+
 
 
 
@@ -101,6 +104,8 @@
 
 
 
+
+
     - name: Log in to ECR
       shell: "aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin {{ ecr_repository }}"
       register: login_result
@@ -115,6 +120,48 @@
         source: pull
       when: login_result is succeeded
 
+    - name: Copy Docker Compose file to the target host
+      copy:
+        src: /home/ubuntu/workspace/jenkins_proj/my_proj/aws_project/polybot/docker-compose.yaml
+        dest: /home/ubuntu/docker-compose.yaml
+        mode: '0644'
+
+
+
+
+
+
+
+
+
+    - name: Add remote "ubuntu" user to "docker" group
+      remote_user: ubuntu
+      user:
+        name: "ubuntu"
+        group: "docker"
+        append: yes
+      tags:
+        - docker
+
+    - name: Install docker-compose
+      remote_user: ubuntu
+      get_url: 
+        url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
+
+
+    - name: Run Docker Compose
+      command: docker-compose -f /home/ubuntu/docker-compose.yaml up -d
+      args:
+        chdir: /home/ubuntu
+
+
+
+
+
+
 # Running this playbook example command ansible-playbook -i hosts.ini -e "path=/home/ubuntu/ansible_test username=ubuntu group=ubuntu path_text=/home/ubuntu/ansible_test/test.txt"  create_dir_with_params.yaml      
 
 # Running this playbook with json  ansible-playbook -i hosts.ini -e "group=ubuntu"  -e "@params.json" create_dir_with_params.yaml
+# Running this playbook with json  ansible-playbook -i hosts.ini -e "@params.json" create_dir_with_params.yaml
