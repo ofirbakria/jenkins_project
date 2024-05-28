@@ -43,7 +43,7 @@ TELEGRAM_APP_URL = "https://b-z-new-280415815.eu-west-1.elb.amazonaws.com"
   
 @app.route('/', methods=['GET'])
 def index():
-    retutern 'Ok Bro'
+    return 'Ok Bro'
 
 
 @app.route(f'/{TELEGRAM_TOKEN}/', methods=['POST'])
