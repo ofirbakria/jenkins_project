@@ -3,4 +3,3 @@ requests
 telebot
 loguru
 boto3
-io
