@@ -1,3 +1,4 @@
+import io
 import json
 import requests
 import telebot
@@ -35,6 +36,8 @@ class Bot:
         pem_contents = secret_response['SecretString']
         print(pem_contents)
         # set the webhook URL
+        # Create a file-like object from the PEM string
+        pem_file = io.StringIO(pem_contents)
         #self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
         self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', certificate=pem_contents)
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')

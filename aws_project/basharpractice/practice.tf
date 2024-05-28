@@ -9,7 +9,7 @@ resource "aws_instance" "example" {
   instance_type          = "t2.micro"
   key_name               = "bashar_z_aws_new"        # Replace with your key pair
   vpc_security_group_ids = ["sg-0e560198198d80f77"]  # Reference to your existing security group
-  subnet_id              = "subnet-07b7e2400c65f5174" # Specify the subnet ID
+  subnet_id              = "subnet-0429729bb01abd3ca" # Specify the subnet ID
 
   # Request a public IP address for the instance
   associate_public_ip_address = true
