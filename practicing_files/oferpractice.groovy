@@ -68,38 +68,36 @@ pipeline {
 
 
                 '''
-                // sh "sudo apt get update"
-                // sh "cd ./terraform && sudo chmod +x user_data.sh"
-                // sh "cd ./terraform && terraform init && terraform apply -auto-approve"
-                // sh "cd ./terraform && terraform output -json > file.json"
-                // sh "sudo apt install jq"//cat file.json | jq -r '.["ec2-public_ip"].value'
-                // sh "public_url=$(cat file.json | jq -r '.['ec2-public_ip'].value')"
                 }
             }
         }
 
 
-        // stage('Build hosts file containing public ip') {
-        //     steps {
-        //         script {
-        //         println("=====================================${STAGE_NAME}=====================================")
-        //         sh '''
-                
-        //         export public_url=$(cat terraform/file.json | jq -r '.["ec2-public_ip"].value')
+        stage('Generate Ansible Hosts File') {
+            steps {
+                script {
+                println("=====================================${STAGE_NAME}=====================================")
 
-        //         cd ansible &&
-        //         echo "[linux]" > hosts.ini &&
-        //         echo "$public_url" >> hosts.ini &&
-        //         echo "" >> hosts.ini &&
-        //         echo "[linux:vars]" >> hosts.ini &&
-        //         echo "ansible_ssh_user=ubuntu" >> hosts.ini &&
-        //         echo "ansible_ssh_private_key_file=/home/ubuntu/key.pem" >> hosts.ini &&
-        //         echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> hosts.ini
+                // Capture the Terraform output
+                def polybotIp = sh(script: 'cd terraform && terraform output -raw polybot1-public_ip', returnStdout: true).trim()
+                def metricstreamerIp = sh(script: 'cd terraform && terraform output -raw metricstreamer-public_ip', returnStdout: true).trim()
 
-        //         '''
-        //         }
-        //     }
-        // }
+
+                sh """
+                cd oferansible &&
+                echo "[linux]" > hosts.ini &&
+                echo "$polybotIp" >> hosts.ini &&
+                echo "$metricstreamerIp" >> hosts.ini &&
+                echo "" >> hosts.ini &&
+                echo "[linux:vars]" >> hosts.ini &&
+                echo "ansible_ssh_user=ubuntu" >> hosts.ini &&
+                echo "ansible_ssh_private_key_file=/home/ubuntu/key.pem" >> hosts.ini &&
+                echo "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'" >> hosts.ini
+
+                """
+                }
+            }
+        }
   }
 }
 // create hosts.ini file and add the public_url into the hosts file
