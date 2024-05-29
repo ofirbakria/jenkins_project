@@ -5,3 +5,4 @@ sudo apt update
 
 # Install Python
 sudo apt install -y python3
+sudo apt-get install jq
