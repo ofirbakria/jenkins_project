@@ -4,33 +4,10 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-20.04-amd64-server-*"]
-  }
-  
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  owners = ["933060838752"] # Canonical's AWS account ID
-}
-
-
-
 
 # Create a polybot-ec2 
 resource "aws_instance" "polybot-ec2" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = "ami-0776c814353b4814d"
   instance_type = "t2.micro"
   subnet_id     = "subnet-0ab427895c5315e17"
   key_name      = "oferbakria-jenkins"
@@ -55,7 +32,7 @@ resource "aws_lb_target_group_attachment" "tg_attachment" {
 
 # Create a ec2 instance
 resource "aws_instance" "metricstreamer-ec2" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = "ami-0776c814353b4814d"
   instance_type = "t2.micro"
   subnet_id     = "subnet-0ab427895c5315e17"
   key_name      = "oferbakria-jenkins"
