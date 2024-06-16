@@ -60,7 +60,7 @@ def getSummrize(data):
     return f'Your photo contains : \n{class_counts_string}'
 
 TELEGRAM_TOKEN = get_secret()
-TELEGRAM_APP_URL = "https://oferbakria-loadbalancer-1920523343.eu-west-1.elb.amazonaws.com"
+TELEGRAM_APP_URL = os.environ['LOAD_BALANCER']
   
 @app.route('/', methods=['GET'])
 def index():

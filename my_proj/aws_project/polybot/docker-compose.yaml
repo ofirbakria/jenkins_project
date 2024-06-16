@@ -12,6 +12,7 @@ services:
       # - ./YOURPRIVATE.key:/app/YOURPRIVATE.key
       # - ./YOURPUBLIC.pem:/app/YOURPUBLIC.pem
       - /home/ubuntu/.aws/credentials:/root/.aws/credentials
+      #C:\Users\User\.aws\credentials
       # - ./polybot/bot.py:/app/bot.py
       # - ./polybot/app.py:/app/app.py
       
